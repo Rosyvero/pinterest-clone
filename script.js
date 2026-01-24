@@ -8,7 +8,7 @@
 // 2. Create a free account and register an application
 // 3. Copy your Access Key and paste it below
 // ============================================
-const UNSPLASH_ACCESS_KEY = 'YOUR_UNSPLASH_ACCESS_KEY_HERE'; // Replace with your actual key
+const UNSPLASH_ACCESS_KEY = 'MkovGsPFoYxHbKRBOBto1aEEcT4nPktJRq2ecfDrhbc';
 const UNSPLASH_API_URL = 'https://api.unsplash.com/search/photos';
 
 document.addEventListener('DOMContentLoaded', () => {
