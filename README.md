@@ -21,17 +21,17 @@ A pixel-perfect Pinterest interface clone built with vanilla HTML, CSS, and Java
 
 ## Live Demo
 
-🔗 [View Live Demo](https://YOUR-USERNAME.github.io/pinterest-clone/)
+🔗 [View Live Demo](https://rosyvero.github.io/pinterest-clone/)
 
 ## Screenshots
 
-![Pinterest Clone Screenshot](images/vintage-room.jpg)
+![Pinterest Clone Screenshot](images/screenshot.png)
 
 ## Getting Started
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/pinterest-clone.git
+   git clone https://github.com/Rosyvero/pinterest-clone.git
    ```
 
 2. Open `index.html` in your browser, or run a local server:
