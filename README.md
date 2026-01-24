@@ -43,7 +43,7 @@ A pixel-perfect Pinterest interface clone built with vanilla HTML, CSS, and Java
 
 ## Author
 
-**Rosy V** - [LinkedIn](https://linkedin.com/in/YOUR-PROFILE)
+**Rosy Veronica** - [LinkedIn](https://www.linkedin.com/in/rosyveronica)
 
 ## License
 
