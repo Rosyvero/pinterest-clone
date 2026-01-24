@@ -82,16 +82,29 @@
                     </button>
                 </div>
                 <div class="header-right">
-                    <div class="dropdown-btn">
-                        All Pins
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="dropdown-arrow">
-                            <path d="M7 10l5 5 5-5H7z" />
-                        </svg>
+                    <div class="dropdown-wrapper" id="allPinsDropdown">
+                        <button class="dropdown-btn" id="allPinsBtn">
+                            <span id="dropdownLabel">All Pins</span>
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="dropdown-arrow">
+                                <path d="M7 10l5 5 5-5H7z" />
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <button class="dropdown-item active" data-filter="">All Pins</button>
+                            <button class="dropdown-item" data-filter="pink">Pink</button>
+                            <button class="dropdown-item" data-filter="blue">Blue</button>
+                            <button class="dropdown-item" data-filter="purple">Purple</button>
+                            <button class="dropdown-item" data-filter="summer">Summer</button>
+                            <button class="dropdown-item" data-filter="gym">Gym</button>
+                            <button class="dropdown-item" data-filter="outfits">Outfits</button>
+                            <button class="dropdown-item" data-filter="pfp">Profile Pictures</button>
+                            <button class="dropdown-item" data-filter="quotes">Quotes</button>
+                        </div>
                     </div>
-                    <div class="user-avatar">
+                    <div class="user-avatar" id="userAvatar">
                         <img src="images/profile.jpg" alt="User Profile">
                     </div>
-                    <button class="more-btn">
+                    <button class="more-btn" id="moreBtn">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M7 10l5 5 5-5H7z" />
                         </svg>
