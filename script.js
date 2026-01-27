@@ -557,13 +557,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Filter settings button (horizontal lines icon) - opens filter panel
-    const filterSettingsBtn = document.querySelector('.settings-btn');
+    const filterSettingsBtn = document.getElementById('filterSettingsBtn');
     let currentFilter = 'all-pins'; // Track current filter selection
 
+    console.log('Filter button found:', filterSettingsBtn);
+
     if (filterSettingsBtn) {
-        filterSettingsBtn.addEventListener('click', () => {
+        filterSettingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Filter button clicked!');
             showFilterPanel();
         });
+    } else {
+        console.error('Filter settings button not found!');
     }
 
     // Show Filter Panel Modal
