@@ -556,6 +556,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Filter settings button (horizontal lines icon) - opens filter dropdown
+    const filterSettingsBtn = document.querySelector('.settings-btn');
+    if (filterSettingsBtn) {
+        filterSettingsBtn.addEventListener('click', () => {
+            // Toggle the All Pins dropdown
+            const dropdownWrapper = document.getElementById('allPinsDropdown');
+            if (dropdownWrapper) {
+                dropdownWrapper.classList.toggle('open');
+                showToast('Select a filter category');
+            }
+        });
+    }
+
     // All Pins Dropdown functionality
     const dropdownWrapper = document.getElementById('allPinsDropdown');
     const dropdownBtn = document.getElementById('allPinsBtn');
@@ -678,6 +691,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch trending images from Unsplash
     async function fetchTrendingImages() {
+        console.log('fetchTrendingImages called');
+        console.log('API Key:', UNSPLASH_ACCESS_KEY ? 'Present' : 'Missing');
+
         masonryGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
                 <div class="loading-spinner"></div>
@@ -686,21 +702,29 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            // Fetch random popular photos (trending)
-            const response = await fetch(
-                'https://api.unsplash.com/photos/random?count=20&orientation=squarish',
-                {
-                    headers: {
-                        'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
-                    }
+            // Search for trending topics instead of random (more reliable)
+            const trendingTopics = ['aesthetic', 'minimal', 'nature', 'fashion', 'home decor'];
+            const randomTopic = trendingTopics[Math.floor(Math.random() * trendingTopics.length)];
+
+            console.log('Fetching trending for topic:', randomTopic);
+
+            const apiUrl = `https://api.unsplash.com/search/photos?query=${randomTopic}&per_page=20&order_by=popular`;
+            console.log('API URL:', apiUrl);
+
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
                 }
-            );
+            });
 
             if (!response.ok) {
                 throw new Error(`API Error: ${response.status}`);
             }
 
-            const photos = await response.json();
+            const data = await response.json();
+            const photos = data.results;
+
+            console.log('Got photos:', photos.length);
 
             masonryGrid.innerHTML = '';
 
@@ -710,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            showToast('✨ Trending ideas loaded!');
+            showToast(`✨ Trending ${randomTopic} ideas!`);
 
         } catch (error) {
             console.error('Error fetching trending:', error);
