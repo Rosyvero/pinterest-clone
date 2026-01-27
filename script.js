@@ -556,17 +556,232 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Filter settings button (horizontal lines icon) - opens filter dropdown
+    // Filter settings button (horizontal lines icon) - opens filter panel
     const filterSettingsBtn = document.querySelector('.settings-btn');
+    let currentFilter = 'all-pins'; // Track current filter selection
+
     if (filterSettingsBtn) {
         filterSettingsBtn.addEventListener('click', () => {
-            // Toggle the All Pins dropdown
-            const dropdownWrapper = document.getElementById('allPinsDropdown');
-            if (dropdownWrapper) {
-                dropdownWrapper.classList.toggle('open');
-                showToast('Select a filter category');
+            showFilterPanel();
+        });
+    }
+
+    // Show Filter Panel Modal
+    function showFilterPanel() {
+        // Remove existing panel if any
+        const existingPanel = document.querySelector('.filter-panel-overlay');
+        if (existingPanel) {
+            existingPanel.remove();
+            return;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.className = 'filter-panel-overlay';
+        overlay.innerHTML = `
+            <div class="filter-panel">
+                <h3 class="filter-panel-title">Filters</h3>
+                
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <span>All Pins</span>
+                        <input type="radio" name="filter-type" value="all-pins" ${currentFilter === 'all-pins' ? 'checked' : ''}>
+                        <span class="radio-custom"></span>
+                    </label>
+                    
+                    <label class="filter-option">
+                        <span>Videos</span>
+                        <input type="radio" name="filter-type" value="videos" ${currentFilter === 'videos' ? 'checked' : ''}>
+                        <span class="radio-custom"></span>
+                    </label>
+                    
+                    <label class="filter-option">
+                        <span>Boards</span>
+                        <input type="radio" name="filter-type" value="boards" ${currentFilter === 'boards' ? 'checked' : ''}>
+                        <span class="radio-custom"></span>
+                    </label>
+                    
+                    <label class="filter-option">
+                        <span>Profiles</span>
+                        <input type="radio" name="filter-type" value="profiles" ${currentFilter === 'profiles' ? 'checked' : ''}>
+                        <span class="radio-custom"></span>
+                    </label>
+                </div>
+                
+                <div class="filter-panel-buttons">
+                    <button class="filter-reset-btn">Reset</button>
+                    <button class="filter-apply-btn">Apply</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Style the overlay and panel
+        Object.assign(overlay.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.4)',
+            zIndex: '1000',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            paddingTop: '120px'
+        });
+
+        const panel = overlay.querySelector('.filter-panel');
+        Object.assign(panel.style, {
+            background: 'white',
+            borderRadius: '16px',
+            padding: '24px',
+            width: '320px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            animation: 'slideDown 0.2s ease'
+        });
+
+        const title = panel.querySelector('.filter-panel-title');
+        Object.assign(title.style, {
+            fontSize: '16px',
+            fontWeight: '600',
+            marginBottom: '20px',
+            color: '#111'
+        });
+
+        const options = panel.querySelectorAll('.filter-option');
+        options.forEach(opt => {
+            Object.assign(opt.style, {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px 0',
+                borderBottom: '1px solid #efefef',
+                cursor: 'pointer',
+                fontSize: '16px'
+            });
+
+            const input = opt.querySelector('input');
+            input.style.display = 'none';
+
+            const radioCustom = opt.querySelector('.radio-custom');
+            Object.assign(radioCustom.style, {
+                width: '24px',
+                height: '24px',
+                border: '2px solid #cdcdcd',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s'
+            });
+
+            if (input.checked) {
+                radioCustom.style.borderColor = '#0076d3';
+                radioCustom.innerHTML = '<div style="width: 12px; height: 12px; background: #0076d3; border-radius: 50%;"></div>';
+            }
+
+            opt.addEventListener('click', () => {
+                options.forEach(o => {
+                    o.querySelector('input').checked = false;
+                    const rc = o.querySelector('.radio-custom');
+                    rc.style.borderColor = '#cdcdcd';
+                    rc.innerHTML = '';
+                });
+                input.checked = true;
+                radioCustom.style.borderColor = '#0076d3';
+                radioCustom.innerHTML = '<div style="width: 12px; height: 12px; background: #0076d3; border-radius: 50%;"></div>';
+            });
+        });
+
+        const buttonsDiv = panel.querySelector('.filter-panel-buttons');
+        Object.assign(buttonsDiv.style, {
+            display: 'flex',
+            gap: '12px',
+            marginTop: '24px',
+            justifyContent: 'center'
+        });
+
+        const resetBtn = panel.querySelector('.filter-reset-btn');
+        Object.assign(resetBtn.style, {
+            padding: '12px 24px',
+            background: '#efefef',
+            border: 'none',
+            borderRadius: '24px',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            color: '#111'
+        });
+
+        const applyBtn = panel.querySelector('.filter-apply-btn');
+        Object.assign(applyBtn.style, {
+            padding: '12px 24px',
+            background: '#e60023',
+            border: 'none',
+            borderRadius: '24px',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            color: 'white'
+        });
+
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.remove();
             }
         });
+
+        // Reset button
+        resetBtn.onclick = () => {
+            currentFilter = 'all-pins';
+            overlay.remove();
+            renderPins('');
+            showToast('Filters reset');
+        };
+
+        // Apply button
+        applyBtn.onclick = () => {
+            const selected = panel.querySelector('input[name="filter-type"]:checked');
+            if (selected) {
+                currentFilter = selected.value;
+                overlay.remove();
+
+                // Apply the filter
+                if (currentFilter === 'all-pins') {
+                    renderPins('');
+                    showToast('Showing all pins');
+                } else if (currentFilter === 'videos') {
+                    masonryGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">🎬</div>
+                            <h2 style="color: #111; margin-bottom: 8px;">Videos</h2>
+                            <p style="color: #767676;">Video pins would appear here</p>
+                        </div>
+                    `;
+                    showToast('Showing videos');
+                } else if (currentFilter === 'boards') {
+                    masonryGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+                            <h2 style="color: #111; margin-bottom: 8px;">Boards</h2>
+                            <p style="color: #767676;">Pinterest boards would appear here</p>
+                        </div>
+                    `;
+                    showToast('Showing boards');
+                } else if (currentFilter === 'profiles') {
+                    masonryGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
+                            <h2 style="color: #111; margin-bottom: 8px;">Profiles</h2>
+                            <p style="color: #767676;">User profiles would appear here</p>
+                        </div>
+                    `;
+                    showToast('Showing profiles');
+                }
+            }
+        };
     }
 
     // All Pins Dropdown functionality
