@@ -1763,6 +1763,13 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
 
-    // Initialize
-    renderPins();
+    // Initialize with a random search term for dynamic feed
+    const topics = ['aesthetic', 'minimalism', 'nature', 'interior design', 'street photography', 'architecture', 'art', 'cinematic'];
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+
+    if (UNSPLASH_ACCESS_KEY !== 'YOUR_UNSPLASH_ACCESS_KEY_HERE') {
+        searchUnsplashImages(randomTopic);
+    } else {
+        renderPins();
+    }
 });
