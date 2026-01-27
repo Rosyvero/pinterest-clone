@@ -664,28 +664,70 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Home Feed');
     });
 
-    // Explore button - show explore images
-    document.getElementById('nav-explore').addEventListener('click', (e) => {
+    // Explore button - fetch trending images from Unsplash API
+    document.getElementById('nav-explore').addEventListener('click', async (e) => {
         e.preventDefault();
         setActiveNav(e.currentTarget);
         showMainContent();
         searchInput.value = '';
         dropdownLabel.textContent = 'Explore';
 
-        // Show a curated "explore" view with different categories
-        masonryGrid.innerHTML = '';
-        const exploreCategories = ['summer', 'pink', 'blue', 'purple', 'aesthetic'];
-        const explorePins = pins.filter(pin =>
-            pin.tags && pin.tags.some(tag => exploreCategories.includes(tag))
-        );
-        explorePins.forEach(pin => {
-            const pinCard = createPinCard(pin);
-            masonryGrid.appendChild(pinCard);
-        });
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        showToast('Explore trending ideas');
+        // Fetch trending/popular images from Unsplash
+        await fetchTrendingImages();
     });
+
+    // Fetch trending images from Unsplash
+    async function fetchTrendingImages() {
+        masonryGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <div class="loading-spinner"></div>
+                <p style="color: #767676; margin-top: 16px;">Loading trending ideas...</p>
+            </div>
+        `;
+
+        try {
+            // Fetch random popular photos (trending)
+            const response = await fetch(
+                'https://api.unsplash.com/photos/random?count=20&orientation=squarish',
+                {
+                    headers: {
+                        'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const photos = await response.json();
+
+            masonryGrid.innerHTML = '';
+
+            photos.forEach((photo, index) => {
+                const pinCard = createAPICard(photo, index);
+                masonryGrid.appendChild(pinCard);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast('✨ Trending ideas loaded!');
+
+        } catch (error) {
+            console.error('Error fetching trending:', error);
+            // Fall back to local pins if API fails
+            masonryGrid.innerHTML = '';
+            const exploreCategories = ['summer', 'pink', 'blue', 'purple', 'aesthetic'];
+            const explorePins = pins.filter(pin =>
+                pin.tags && pin.tags.some(tag => exploreCategories.includes(tag))
+            );
+            explorePins.forEach(pin => {
+                const pinCard = createPinCard(pin);
+                masonryGrid.appendChild(pinCard);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast('Explore trending ideas');
+        }
+    }
 
     // Create button - show create board modal
     document.getElementById('nav-create').addEventListener('click', (e) => {
@@ -851,9 +893,10 @@ document.addEventListener('DOMContentLoaded', () => {
         showPageView('updates');
     });
 
-    // Settings button
+    // Settings button - show settings page
     document.getElementById('nav-settings').addEventListener('click', (e) => {
         e.preventDefault();
+        setActiveNav(e.currentTarget);
         showPageView('settings');
     });
 
