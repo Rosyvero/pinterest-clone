@@ -384,12 +384,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const recentSearches = [
         { text: 'aesthetic', image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=100&h=100&fit=crop' },
-        { text: 'sea blue suit men outfit', image: 'https://images.unsplash.com/photo-1594932224011-04504ce5aba6?w=100&h=100&fit=crop' },
+        { text: 'sea blue suit men outfit', image: 'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=100&h=100&fit=crop' },
         { text: 'sea green suit men outfit', image: 'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?w=100&h=100&fit=crop' },
         { text: 'Sea green', color: '#568c7d' },
         { text: 'butterfly haircut', image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=100&h=100&fit=crop' },
-        { text: 'kitchen design with island', image: 'https://images.unsplash.com/photo-1556911223-e452151320ef?w=100&h=100&fit=crop' },
-        { text: 'kitchen design', image: 'https://images.unsplash.com/photo-1556912177-c54030663168?w=100&h=100&fit=crop' },
+        { text: 'kitchen design with island', image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop' },
+        { text: 'kitchen design', image: 'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=100&h=100&fit=crop' },
         { text: 'Lavender saree', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=100&h=100&fit=crop' }
     ];
 
