@@ -750,25 +750,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Apply button
         applyBtn.onclick = async () => {
+            console.log('Apply button clicked!');
             const selected = panel.querySelector('input[name="filter-type"]:checked');
+            console.log('Selected filter:', selected ? selected.value : 'none');
+
             if (selected) {
                 currentFilter = selected.value;
                 overlay.remove();
+                console.log('Applying filter:', currentFilter);
 
                 // Apply the filter
                 if (currentFilter === 'all-pins') {
+                    console.log('Showing all pins');
                     renderPins('');
                     showToast('Showing all pins');
                 } else if (currentFilter === 'videos') {
+                    console.log('Fetching videos...');
                     // Search for video/film related content
-                    await searchFilterContent('video film cinema', '🎬 Videos');
+                    await searchFilterContent('cinema film video', '🎬 Videos');
                 } else if (currentFilter === 'boards') {
+                    console.log('Showing boards...');
                     // Show sample boards layout
                     showBoardsView();
                 } else if (currentFilter === 'profiles') {
+                    console.log('Showing profiles...');
                     // Show sample profiles
                     showProfilesView();
                 }
+            } else {
+                console.log('No filter selected');
+                showToast('Please select a filter');
             }
         };
     }
