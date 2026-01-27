@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Apply button
-        applyBtn.onclick = () => {
+        applyBtn.onclick = async () => {
             const selected = panel.querySelector('input[name="filter-type"]:checked');
             if (selected) {
                 currentFilter = selected.value;
@@ -760,35 +760,168 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderPins('');
                     showToast('Showing all pins');
                 } else if (currentFilter === 'videos') {
-                    masonryGrid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">🎬</div>
-                            <h2 style="color: #111; margin-bottom: 8px;">Videos</h2>
-                            <p style="color: #767676;">Video pins would appear here</p>
-                        </div>
-                    `;
-                    showToast('Showing videos');
+                    // Search for video/film related content
+                    await searchFilterContent('video film cinema', '🎬 Videos');
                 } else if (currentFilter === 'boards') {
-                    masonryGrid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
-                            <h2 style="color: #111; margin-bottom: 8px;">Boards</h2>
-                            <p style="color: #767676;">Pinterest boards would appear here</p>
-                        </div>
-                    `;
-                    showToast('Showing boards');
+                    // Show sample boards layout
+                    showBoardsView();
                 } else if (currentFilter === 'profiles') {
-                    masonryGrid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
-                            <h2 style="color: #111; margin-bottom: 8px;">Profiles</h2>
-                            <p style="color: #767676;">User profiles would appear here</p>
-                        </div>
-                    `;
-                    showToast('Showing profiles');
+                    // Show sample profiles
+                    showProfilesView();
                 }
             }
         };
+    }
+
+    // Search content for filter options
+    async function searchFilterContent(query, title) {
+        masonryGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <div class="loading-spinner"></div>
+                <p style="color: #767676; margin-top: 16px;">Loading ${title}...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch(
+                `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=20`,
+                {
+                    headers: {
+                        'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+                    }
+                }
+            );
+
+            if (!response.ok) throw new Error('API Error');
+
+            const data = await response.json();
+            masonryGrid.innerHTML = '';
+
+            data.results.forEach((photo, index) => {
+                const pinCard = createAPICard(photo, index);
+                masonryGrid.appendChild(pinCard);
+            });
+
+            showToast(`${title} loaded!`);
+        } catch (error) {
+            console.error(error);
+            masonryGrid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                    <h2 style="color: #111;">Failed to load content</h2>
+                    <p style="color: #767676;">Please try again later</p>
+                </div>
+            `;
+        }
+    }
+
+    // Show Boards View
+    function showBoardsView() {
+        masonryGrid.innerHTML = `
+            <div style="grid-column: 1/-1; padding: 20px;">
+                <h2 style="margin-bottom: 24px; color: #111;">📋 Your Boards</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                    <div class="board-card" style="background: linear-gradient(135deg, #ff6b6b, #feca57); border-radius: 16px; padding: 24px; color: white; cursor: pointer; transition: transform 0.2s;">
+                        <h3 style="margin-bottom: 8px;">💕 Aesthetic</h3>
+                        <p style="opacity: 0.9;">24 Pins</p>
+                    </div>
+                    <div class="board-card" style="background: linear-gradient(135deg, #5f27cd, #a55eea); border-radius: 16px; padding: 24px; color: white; cursor: pointer; transition: transform 0.2s;">
+                        <h3 style="margin-bottom: 8px;">� Pink Vibes</h3>
+                        <p style="opacity: 0.9;">18 Pins</p>
+                    </div>
+                    <div class="board-card" style="background: linear-gradient(135deg, #00d2d3, #54a0ff); border-radius: 16px; padding: 24px; color: white; cursor: pointer; transition: transform 0.2s;">
+                        <h3 style="margin-bottom: 8px;">🏋️ Fitness Goals</h3>
+                        <p style="opacity: 0.9;">32 Pins</p>
+                    </div>
+                    <div class="board-card" style="background: linear-gradient(135deg, #ff9ff3, #f368e0); border-radius: 16px; padding: 24px; color: white; cursor: pointer; transition: transform 0.2s;">
+                        <h3 style="margin-bottom: 8px;">👗 Outfits</h3>
+                        <p style="opacity: 0.9;">45 Pins</p>
+                    </div>
+                    <div class="board-card" style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e); border-radius: 16px; padding: 24px; color: #333; cursor: pointer; transition: transform 0.2s;">
+                        <h3 style="margin-bottom: 8px;">☀️ Summer</h3>
+                        <p style="opacity: 0.9;">28 Pins</p>
+                    </div>
+                    <div class="board-card" style="background: linear-gradient(135deg, #636e72, #2d3436); border-radius: 16px; padding: 24px; color: white; cursor: pointer; transition: transform 0.2s;">
+                        <h3 style="margin-bottom: 8px;">📝 Quotes</h3>
+                        <p style="opacity: 0.9;">56 Pins</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        showToast('📋 Showing your boards');
+
+        // Add hover effects
+        document.querySelectorAll('.board-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.transform = 'scale(1.02)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'scale(1)');
+            card.addEventListener('click', () => {
+                const boardName = card.querySelector('h3').textContent;
+                showToast(`Opening ${boardName}`);
+            });
+        });
+    }
+
+    // Show Profiles View
+    function showProfilesView() {
+        masonryGrid.innerHTML = `
+            <div style="grid-column: 1/-1; padding: 20px;">
+                <h2 style="margin-bottom: 24px; color: #111;">👤 People to Follow</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="profile-card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px; cursor: pointer; transition: transform 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <h3 style="margin-bottom: 4px; color: #111;">Sarah Johnson</h3>
+                            <p style="color: #767676; font-size: 14px;">12.5k followers • 342 pins</p>
+                        </div>
+                        <button style="margin-left: auto; padding: 8px 16px; background: #e60023; color: white; border: none; border-radius: 24px; font-weight: 600; cursor: pointer;">Follow</button>
+                    </div>
+                    <div class="profile-card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px; cursor: pointer; transition: transform 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <h3 style="margin-bottom: 4px; color: #111;">Alex Chen</h3>
+                            <p style="color: #767676; font-size: 14px;">8.2k followers • 521 pins</p>
+                        </div>
+                        <button style="margin-left: auto; padding: 8px 16px; background: #e60023; color: white; border: none; border-radius: 24px; font-weight: 600; cursor: pointer;">Follow</button>
+                    </div>
+                    <div class="profile-card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px; cursor: pointer; transition: transform 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <h3 style="margin-bottom: 4px; color: #111;">Emma Wilson</h3>
+                            <p style="color: #767676; font-size: 14px;">25.1k followers • 687 pins</p>
+                        </div>
+                        <button style="margin-left: auto; padding: 8px 16px; background: #e60023; color: white; border: none; border-radius: 24px; font-weight: 600; cursor: pointer;">Follow</button>
+                    </div>
+                    <div class="profile-card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px; cursor: pointer; transition: transform 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <h3 style="margin-bottom: 4px; color: #111;">James Miller</h3>
+                            <p style="color: #767676; font-size: 14px;">5.8k followers • 198 pins</p>
+                        </div>
+                        <button style="margin-left: auto; padding: 8px 16px; background: #e60023; color: white; border: none; border-radius: 24px; font-weight: 600; cursor: pointer;">Follow</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        showToast('👤 Showing profiles');
+
+        // Add hover effects and follow button functionality
+        document.querySelectorAll('.profile-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.transform = 'scale(1.01)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'scale(1)');
+
+            const followBtn = card.querySelector('button');
+            followBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (followBtn.textContent === 'Follow') {
+                    followBtn.textContent = 'Following';
+                    followBtn.style.background = '#111';
+                    showToast('✅ Following!');
+                } else {
+                    followBtn.textContent = 'Follow';
+                    followBtn.style.background = '#e60023';
+                    showToast('Unfollowed');
+                }
+            });
+        });
     }
 
     // All Pins Dropdown functionality
