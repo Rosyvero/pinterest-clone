@@ -168,6 +168,118 @@ body {
     fill: var(--text-secondary);
 }
 
+/* Search Overlay Styles */
+.search-overlay {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 24px;
+    animation: fadeInDown 0.2s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.search-overlay.active {
+    display: block !important;
+    /* Ensure it shows when active class is present */
+    z-index: 9999;
+    /* Highest priority to stay on top */
+}
+
+/* Show when input is focused */
+.search-input:focus~.search-overlay {
+    display: block;
+    z-index: 9999;
+}
+
+.recent-searches-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 16px 4px;
+    color: var(--text-primary);
+}
+
+.recent-searches-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 600px) {
+    .recent-searches-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.recent-search-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    overflow: hidden;
+    height: 80px;
+}
+
+.recent-search-item:hover {
+    background-color: #e2e2e2;
+}
+
+.recent-search-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+.recent-search-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background-color: #e2e2e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recent-search-icon-wrapper svg {
+    width: 32px;
+    height: 32px;
+    color: #111;
+}
+
+.recent-search-text {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    padding-right: 12px;
+}
+
+.search-overlay::-webkit-scrollbar {
+    width: 8px;
+}
+
+.search-overlay::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.search-overlay::-webkit-scrollbar-thumb {
+    background: #cdcdcd;
+    border-radius: 4px;
+}
+
+.search-overlay::-webkit-scrollbar-thumb:hover {
+    background: #a5a5a5;
+}
+
 .header-right {
     display: flex;
     align-items: center;

@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const clearSearch = document.getElementById('clearSearch');
 
+    // Explicitly clear search on load
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
     // Track if we're showing API results or local pins
     let isShowingAPIResults = false;
 
@@ -373,10 +378,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- Search Overlay Logic ---
+    const searchOverlay = document.getElementById('searchOverlay');
+    const recentSearchesGrid = document.getElementById('recentSearchesGrid');
+
+    const recentSearches = [
+        { text: 'aesthetic', image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=100&h=100&fit=crop' },
+        { text: 'sea blue suit men outfit', image: 'https://images.unsplash.com/photo-1594932224011-04504ce5aba6?w=100&h=100&fit=crop' },
+        { text: 'sea green suit men outfit', image: 'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?w=100&h=100&fit=crop' },
+        { text: 'Sea green', color: '#568c7d' },
+        { text: 'butterfly haircut', image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=100&h=100&fit=crop' },
+        { text: 'kitchen design with island', image: 'https://images.unsplash.com/photo-1556911223-e452151320ef?w=100&h=100&fit=crop' },
+        { text: 'kitchen design', image: 'https://images.unsplash.com/photo-1556912177-c54030663168?w=100&h=100&fit=crop' },
+        { text: 'Lavender saree', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=100&h=100&fit=crop' }
+    ];
+
+    function renderRecentSearches() {
+        if (!recentSearchesGrid) return;
+
+        recentSearchesGrid.innerHTML = '';
+        recentSearches.forEach(search => {
+            const item = document.createElement('div');
+            item.className = 'recent-search-item';
+
+            let visualContent = '';
+            if (search.image) {
+                visualContent = `<img src="${search.image}" alt="${search.text}" class="recent-search-image">`;
+            } else if (search.color) {
+                visualContent = `<div class="recent-search-image" style="background-color: ${search.color}"></div>`;
+            } else {
+                visualContent = `
+                    <div class="recent-search-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </div>`;
+            }
+
+            item.innerHTML = `
+                ${visualContent}
+                <span class="recent-search-text">${search.text}</span>
+            `;
+
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                searchInput.value = search.text;
+                searchOverlay.classList.remove('active');
+
+                // Trigger search
+                if (UNSPLASH_ACCESS_KEY !== 'YOUR_UNSPLASH_ACCESS_KEY_HERE') {
+                    searchUnsplashImages(search.text);
+                } else {
+                    renderPins(search.text);
+                }
+            });
+
+            recentSearchesGrid.appendChild(item);
+        });
+    }
+
+    renderRecentSearches();
+
+    // Show overlay on focus
+    searchInput.addEventListener('focus', () => {
+        console.log('Search input focused - showing overlay');
+        searchOverlay.classList.add('active');
+        searchOverlay.style.display = 'block'; // Force display
+    });
+
+    // Hide overlay when clicking outside
+    document.addEventListener('mousedown', (e) => {
+        if (!e.target.closest('.search-container')) {
+            console.log('Clicked outside - hiding overlay');
+            searchOverlay.classList.remove('active');
+            searchOverlay.style.display = 'none'; // Force hide
+        }
+    });
+
     // Search Unsplash API on Enter key
     searchInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const searchTerm = e.target.value.trim();
+            searchOverlay.classList.remove('active');
+            searchInput.blur(); // Also blur to match common UX
 
             if (!searchTerm) {
                 // If empty, show local pins
