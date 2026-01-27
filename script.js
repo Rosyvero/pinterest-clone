@@ -358,28 +358,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Search functionality - filter local pins while typing
-    let searchTimeout;
+    // Search functionality - only update UI, don't filter while typing
     searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            const searchTerm = e.target.value.trim();
-
-            // Only filter local pins if not showing API results
-            if (!isShowingAPIResults) {
-                renderPins(searchTerm);
+        // Don't filter while typing - wait for Enter key to search API
+        // Just update the filter tag highlights
+        const searchTerm = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            const tagText = tag.querySelector('span').textContent.toLowerCase();
+            if (tagText === searchTerm) {
+                tag.classList.add('active');
+            } else {
+                tag.classList.remove('active');
             }
-
-            // Update active state on filter tags
-            document.querySelectorAll('.filter-tag').forEach(tag => {
-                const tagText = tag.querySelector('span').textContent.toLowerCase();
-                if (tagText === searchTerm.toLowerCase()) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-        }, 300);
+        });
     });
 
     // Search Unsplash API on Enter key
@@ -403,12 +394,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Search using Unsplash API
+            console.log('Searching Unsplash for:', searchTerm);
             await searchUnsplashImages(searchTerm);
         }
     });
 
     // Unsplash API Search Function
     async function searchUnsplashImages(query) {
+        console.log('searchUnsplashImages called with:', query);
+
         // Show loading state
         masonryGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
@@ -418,14 +412,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            const response = await fetch(
-                `${UNSPLASH_API_URL}?query=${encodeURIComponent(query)}&per_page=30&orientation=portrait`,
-                {
-                    headers: {
-                        'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
-                    }
+            const apiUrl = `${UNSPLASH_API_URL}?query=${encodeURIComponent(query)}&per_page=30`;
+            console.log('Fetching:', apiUrl);
+
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
                 }
-            );
+            });
 
             if (!response.ok) {
                 throw new Error(`API Error: ${response.status}`);
