@@ -365,9 +365,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Search functionality - only update UI, don't filter while typing
     searchInput.addEventListener('input', (e) => {
-        // Don't filter while typing - wait for Enter key to search API
-        // Just update the filter tag highlights
         const searchTerm = e.target.value.trim().toLowerCase();
+
+        // Hide overlay if user starts typing, show if empty
+        if (searchTerm === '') {
+            searchOverlay.classList.add('active');
+            searchOverlay.style.display = 'block';
+        } else {
+            searchOverlay.classList.remove('active');
+            searchOverlay.style.display = 'none';
+        }
+
+        // Just update the filter tag highlights
         document.querySelectorAll('.filter-tag').forEach(tag => {
             const tagText = tag.querySelector('span').textContent.toLowerCase();
             if (tagText === searchTerm) {
@@ -424,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 searchInput.value = search.text;
                 searchOverlay.classList.remove('active');
+                searchOverlay.style.display = 'none';
 
                 // Trigger search
                 if (UNSPLASH_ACCESS_KEY !== 'YOUR_UNSPLASH_ACCESS_KEY_HERE') {
@@ -439,11 +449,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderRecentSearches();
 
-    // Show overlay on focus
+    // Show overlay on focus only if empty
     searchInput.addEventListener('focus', () => {
-        console.log('Search input focused - showing overlay');
-        searchOverlay.classList.add('active');
-        searchOverlay.style.display = 'block'; // Force display
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm === '') {
+            console.log('Search input focused (empty) - showing overlay');
+            searchOverlay.classList.add('active');
+            searchOverlay.style.display = 'block';
+        } else {
+            console.log('Search input focused (not empty) - keeping overlay hidden');
+            searchOverlay.classList.remove('active');
+            searchOverlay.style.display = 'none';
+        }
     });
 
     // Hide overlay when clicking outside
@@ -460,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') {
             const searchTerm = e.target.value.trim();
             searchOverlay.classList.remove('active');
+            searchOverlay.style.display = 'none'; // Ensure it's hidden
             searchInput.blur(); // Also blur to match common UX
 
             if (!searchTerm) {

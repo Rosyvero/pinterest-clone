@@ -192,11 +192,11 @@ body {
     /* Highest priority to stay on top */
 }
 
-/* Show when input is focused */
-.search-input:focus~.search-overlay {
+/* Show when input is focused - removed to give JS full control */
+/* .search-input:focus~.search-overlay {
     display: block;
     z-index: 9999;
-}
+} */
 
 .recent-searches-title {
     font-size: 16px;
