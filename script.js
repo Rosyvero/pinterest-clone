@@ -623,6 +623,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isShowingAPIResults = false;
         renderPins(''); // Show all local pins
 
+        // Hide overlay when clearing
+        searchOverlay.classList.remove('active');
+        searchOverlay.style.display = 'none';
+
         // Remove active state from all filter tags
         document.querySelectorAll('.filter-tag').forEach(tag => {
             tag.classList.remove('active');
