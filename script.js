@@ -623,9 +623,12 @@ document.addEventListener('DOMContentLoaded', () => {
         isShowingAPIResults = false;
         renderPins(''); // Show all local pins
 
-        // Hide overlay when clearing
-        searchOverlay.classList.remove('active');
-        searchOverlay.style.display = 'none';
+        // Use a tiny timeout to ensure this happens AFTER the focus event handler
+        // which automatically tries to show the overlay when empty
+        setTimeout(() => {
+            searchOverlay.classList.remove('active');
+            searchOverlay.style.display = 'none';
+        }, 10);
 
         // Remove active state from all filter tags
         document.querySelectorAll('.filter-tag').forEach(tag => {
